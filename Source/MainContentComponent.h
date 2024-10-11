@@ -3,8 +3,7 @@
 #include <JuceHeader.h>
 
 class MainContentComponent   : public juce::AudioAppComponent,
-                               public juce::ChangeListener,
-                               public juce::Button::Listener
+                               public juce::ChangeListener
 {
 public:
     MainContentComponent();
@@ -15,7 +14,6 @@ public:
     void releaseResources() override;
     void resized() override;
     void changeListenerCallback(juce::ChangeBroadcaster* source) override;
-//    void buttonClicked(juce::Button* button) override;
 
 private:
     enum TransportState

@@ -5,11 +5,11 @@
               jucerFormatVersion="1">
   <MAINGROUP id="U1FACU" name="Audio Player and Recorder">
     <GROUP id="{FF759B57-1FE3-9BBB-8313-FB70958A1BFC}" name="Source">
-      <FILE id="s7EISk" name="Gui_record_play.h" compile="0" resource="0"
-            file="Source/Gui_record_play.h"/>
+      <FILE id="siifui" name="gui_record_play.cpp" compile="1" resource="0"
+            file="Source/gui_record_play.cpp"/>
       <FILE id="JRbIro" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
-      <FILE id="b8Wm0W" name="Gui_record_play.cpp" compile="1" resource="0"
-            file="Source/Gui_record_play.cpp"/>
+      <FILE id="NKk2na" name="gui_record_play.h" compile="0" resource="0"
+            file="Source/gui_record_play.h"/>
       <FILE id="AOnXTM" name="MainContentComponent.cpp" compile="1" resource="0"
             file="Source/MainContentComponent.cpp"/>
       <FILE id="uqtu1Q" name="MainContentComponent.h" compile="0" resource="0"
