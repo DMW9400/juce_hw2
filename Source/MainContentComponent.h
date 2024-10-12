@@ -34,9 +34,10 @@ private:
 //    };
     AppState currentState;
 //    void changeState(TransportState newState);
-    void openButtonClicked();
+//    void openButtonClicked();
 //    void playButtonClicked();
 //    void stopButtonClicked();
+    void openFile(bool forOutput);
 
     juce::TextButton openButton;
     juce::TextButton playButton;

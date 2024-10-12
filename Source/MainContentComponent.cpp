@@ -118,32 +118,68 @@ void MainContentComponent::timerCallback(){
 }
 void MainContentComponent::sliderValueChanged(juce::Slider* slider){}
 
-void MainContentComponent::openButtonClicked()
+void MainContentComponent::openFile(bool forOutput)
 {
     chooser = std::make_unique<juce::FileChooser>("Select a Wave file to play...",
                                                   juce::File{},
                                                   "*.wav");                     // [7]
-    auto chooserFlags = juce::FileBrowserComponent::openMode
-                      | juce::FileBrowserComponent::canSelectFiles;
+    int chooserFlags;
+    if (forOutput){
+        chooserFlags = juce::FileBrowserComponent::saveMode
+        | juce::FileBrowserComponent::canSelectFiles;
+    }
+    else {
+        chooserFlags = juce::FileBrowserComponent::openMode
+        | juce::FileBrowserComponent::canSelectFiles;
+    }
 
-    chooser->launchAsync(chooserFlags, [this](const juce::FileChooser& fc)       // [8]
+    chooser->launchAsync(chooserFlags, [this, forOutput](const juce::FileChooser& fc)       // [8]
     {
         auto file = fc.getResult();
 
-        if (file != juce::File{})                                               // [9]
+        if (file != juce::File{})                                         // [9]
         {
-            auto* reader = formatManager.createReaderFor(file);                 // [10]
-
-            if (reader != nullptr)
-            {
-                auto newSource = std::make_unique<juce::AudioFormatReaderSource>(reader, true);   // [11]
-                transportSource.setSource(newSource.get(), 0, nullptr, reader->sampleRate);       // [12]
-                playButton.setEnabled(true);                                                      // [13]
-                readerSource.reset(newSource.release());                                          // [14]
+            if (forOutput){
+                auto* reader = formatManager.createReaderFor(file);                 // [10]
+                
+                if (reader != nullptr)
+                {
+                    auto newSource = std::make_unique<juce::AudioFormatReaderSource>(reader, true);   // [11]
+                    transportSource.setSource(newSource.get(), 0, nullptr, reader->sampleRate);       // [12]
+                    playButton.setEnabled(true);                                                      // [13]
+                    readerSource.reset(newSource.release());                                          // [14]
+                }
             }
         }
     });
 }
+
+//void MainContentComponent::openButtonClicked()
+//{
+//    chooser = std::make_unique<juce::FileChooser>("Select a Wave file to play...",
+//                                                  juce::File{},
+//                                                  "*.wav");                     // [7]
+//    auto chooserFlags = juce::FileBrowserComponent::openMode
+//                      | juce::FileBrowserComponent::canSelectFiles;
+//
+//    chooser->launchAsync(chooserFlags, [this](const juce::FileChooser& fc)       // [8]
+//    {
+//        auto file = fc.getResult();
+//
+//        if (file != juce::File{})                                               // [9]
+//        {
+//            auto* reader = formatManager.createReaderFor(file);                 // [10]
+//
+//            if (reader != nullptr)
+//            {
+//                auto newSource = std::make_unique<juce::AudioFormatReaderSource>(reader, true);   // [11]
+//                transportSource.setSource(newSource.get(), 0, nullptr, reader->sampleRate);       // [12]
+//                playButton.setEnabled(true);                                                      // [13]
+//                readerSource.reset(newSource.release());                                          // [14]
+//            }
+//        }
+//    });
+//}
 
 
 //void MainContentComponent::playButtonClicked()
