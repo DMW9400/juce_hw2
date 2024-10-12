@@ -2,7 +2,7 @@
 #include "MainContentComponent.h"
 
 MainContentComponent::MainContentComponent()
-    : state(Stopped)
+//    : state(Stopped)
 {
     addAndMakeVisible(&openButton);
     openButton.setButtonText("Open...");
@@ -76,7 +76,7 @@ void MainContentComponent::changeListenerCallback(juce::ChangeBroadcaster* sourc
 //            changeState(Playing);
 //        else
 //            changeState(Stopped);
-//    }
+    }
 }
 
 //void MainContentComponent::changeState(MainContentComponent::TransportState newState)
@@ -112,6 +112,7 @@ void MainContentComponent::changeListenerCallback(juce::ChangeBroadcaster* sourc
 void MainContentComponent::timerCallback(){
     
 }
+void MainContentComponent::sliderValueChanged(juce::Slider* slider){}
 
 //void MainContentComponent::openButtonClicked()
 //{
