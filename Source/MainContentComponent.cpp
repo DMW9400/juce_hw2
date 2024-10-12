@@ -6,17 +6,17 @@ MainContentComponent::MainContentComponent()
 {
     addAndMakeVisible(&openButton);
     openButton.setButtonText("Open...");
-    openButton.onClick = [this] { openButtonClicked(); };
+//    openButton.onClick = [this] { openButtonClicked(); };
 
     addAndMakeVisible(&playButton);
     playButton.setButtonText("Play");
-    playButton.onClick = [this] { playButtonClicked(); };
+//    playButton.onClick = [this] { playButtonClicked(); };
     playButton.setColour(juce::TextButton::buttonColourId, juce::Colours::green);
     playButton.setEnabled(false);
 
     addAndMakeVisible(&stopButton);
     stopButton.setButtonText("Stop");
-    stopButton.onClick = [this] { stopButtonClicked(); };
+//    stopButton.onClick = [this] { stopButtonClicked(); };
     stopButton.setColour(juce::TextButton::buttonColourId, juce::Colours::red);
     stopButton.setEnabled(false);
 
@@ -25,12 +25,19 @@ MainContentComponent::MainContentComponent()
     formatManager.registerBasicFormats();       // [1]
     transportSource.addChangeListener(this);    // [2]
 
-    setAudioChannels(0, 2);
+    setAudioChannels(1, 2);
 }
 
 MainContentComponent::~MainContentComponent()
 {
     shutdownAudio();
+}
+
+void MainContentComponent::buttonClicked(juce::Button* button){
+    if (button == &openButton){
+        }
+    else if (button == &playButton){}
+    else if (button == &stopButton){}
 }
 
 void MainContentComponent::prepareToPlay(int samplesPerBlockExpected, double sampleRate)
@@ -102,39 +109,43 @@ void MainContentComponent::changeState(MainContentComponent::TransportState newS
     }
 }
 
-void MainContentComponent::openButtonClicked()
-{
-    chooser = std::make_unique<juce::FileChooser>("Select a Wave file to play...",
-                                                  juce::File{},
-                                                  "*.wav");                     // [7]
-    auto chooserFlags = juce::FileBrowserComponent::openMode
-                      | juce::FileBrowserComponent::canSelectFiles;
-
-    chooser->launchAsync(chooserFlags, [this](const juce::FileChooser& fc)       // [8]
-    {
-        auto file = fc.getResult();
-
-        if (file != juce::File{})                                               // [9]
-        {
-            auto* reader = formatManager.createReaderFor(file);                 // [10]
-
-            if (reader != nullptr)
-            {
-                auto newSource = std::make_unique<juce::AudioFormatReaderSource>(reader, true);   // [11]
-                transportSource.setSource(newSource.get(), 0, nullptr, reader->sampleRate);       // [12]
-                playButton.setEnabled(true);                                                      // [13]
-                readerSource.reset(newSource.release());                                          // [14]
-            }
-        }
-    });
+void MainContentComponent::timerCallBack(){
+    
 }
 
-void MainContentComponent::playButtonClicked()
-{
-    changeState(Starting);
-}
+//void MainContentComponent::openButtonClicked()
+//{
+//    chooser = std::make_unique<juce::FileChooser>("Select a Wave file to play...",
+//                                                  juce::File{},
+//                                                  "*.wav");                     // [7]
+//    auto chooserFlags = juce::FileBrowserComponent::openMode
+//                      | juce::FileBrowserComponent::canSelectFiles;
+//
+//    chooser->launchAsync(chooserFlags, [this](const juce::FileChooser& fc)       // [8]
+//    {
+//        auto file = fc.getResult();
+//
+//        if (file != juce::File{})                                               // [9]
+//        {
+//            auto* reader = formatManager.createReaderFor(file);                 // [10]
+//
+//            if (reader != nullptr)
+//            {
+//                auto newSource = std::make_unique<juce::AudioFormatReaderSource>(reader, true);   // [11]
+//                transportSource.setSource(newSource.get(), 0, nullptr, reader->sampleRate);       // [12]
+//                playButton.setEnabled(true);                                                      // [13]
+//                readerSource.reset(newSource.release());                                          // [14]
+//            }
+//        }
+//    });
+//}
 
-void MainContentComponent::stopButtonClicked()
-{
-    changeState(Stopping);
-}
+//void MainContentComponent::playButtonClicked()
+//{
+//    changeState(Starting);
+//}
+//
+//void MainContentComponent::stopButtonClicked()
+//{
+//    changeState(Stopping);
+//}

@@ -1,9 +1,14 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "gui_record_play.h"
 
 class MainContentComponent   : public juce::AudioAppComponent,
-                               public juce::ChangeListener
+                               public juce::ChangeListener,
+                               public juce::Button::Listener,
+                               public juce::Slider::Listener,
+                               public juce::Timer
+
 {
 public:
     MainContentComponent();
@@ -14,6 +19,10 @@ public:
     void releaseResources() override;
     void resized() override;
     void changeListenerCallback(juce::ChangeBroadcaster* source) override;
+    
+    void buttonClicked(juce::Button* button) override;
+    void sliderValueChanged(juce::Slider* slider) override;
+    void timerCallBack() override;
 
 private:
     enum TransportState
@@ -26,8 +35,8 @@ private:
 
     void changeState(TransportState newState);
     void openButtonClicked();
-    void playButtonClicked();
-    void stopButtonClicked();
+//    void playButtonClicked();
+//    void stopButtonClicked();
 
     juce::TextButton openButton;
     juce::TextButton playButton;
