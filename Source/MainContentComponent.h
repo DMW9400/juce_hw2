@@ -32,7 +32,7 @@ private:
 //        Playing,
 //        Stopping
 //    };
-
+    AppState currentState;
 //    void changeState(TransportState newState);
     void openButtonClicked();
 //    void playButtonClicked();
