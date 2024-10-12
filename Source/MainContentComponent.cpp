@@ -72,44 +72,44 @@ void MainContentComponent::changeListenerCallback(juce::ChangeBroadcaster* sourc
 {
     if (source == &transportSource)
     {
-        if (transportSource.isPlaying())
-            changeState(Playing);
-        else
-            changeState(Stopped);
-    }
+//        if (transportSource.isPlaying())
+//            changeState(Playing);
+//        else
+//            changeState(Stopped);
+//    }
 }
 
-void MainContentComponent::changeState(MainContentComponent::TransportState newState)
-{
-    if (state != newState)
-    {
-        state = newState;
+//void MainContentComponent::changeState(MainContentComponent::TransportState newState)
+//{
+//    if (state != newState)
+//    {
+//        state = newState;
+//
+//        switch (state)
+//        {
+//            case Stopped:                           // [3]
+//                stopButton.setEnabled(false);
+//                playButton.setEnabled(true);
+//                transportSource.setPosition(0.0);
+//                break;
+//
+//            case Starting:                          // [4]
+//                playButton.setEnabled(false);
+//                transportSource.start();
+//                break;
+//
+//            case Playing:                           // [5]
+//                stopButton.setEnabled(true);
+//                break;
+//
+//            case Stopping:                          // [6]
+//                transportSource.stop();
+//                break;
+//        }
+//    }
+//}
 
-        switch (state)
-        {
-            case Stopped:                           // [3]
-                stopButton.setEnabled(false);
-                playButton.setEnabled(true);
-                transportSource.setPosition(0.0);
-                break;
-
-            case Starting:                          // [4]
-                playButton.setEnabled(false);
-                transportSource.start();
-                break;
-
-            case Playing:                           // [5]
-                stopButton.setEnabled(true);
-                break;
-
-            case Stopping:                          // [6]
-                transportSource.stop();
-                break;
-        }
-    }
-}
-
-void MainContentComponent::timerCallBack(){
+void MainContentComponent::timerCallback(){
     
 }
 

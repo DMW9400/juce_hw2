@@ -9,3 +9,12 @@
 */
 
 #pragma once
+
+enum AppState {
+    IDLE,
+    PLAYING,
+    RECORDING
+};
+
+extern AppState currentAppState;
+

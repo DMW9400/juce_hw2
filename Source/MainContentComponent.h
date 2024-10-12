@@ -22,18 +22,18 @@ public:
     
     void buttonClicked(juce::Button* button) override;
     void sliderValueChanged(juce::Slider* slider) override;
-    void timerCallBack() override;
+    void timerCallback() override;
 
 private:
-    enum TransportState
-    {
-        Stopped,
-        Starting,
-        Playing,
-        Stopping
-    };
+//    enum TransportState
+//    {
+//        Stopped,
+//        Starting,
+//        Playing,
+//        Stopping
+//    };
 
-    void changeState(TransportState newState);
+//    void changeState(TransportState newState);
     void openButtonClicked();
 //    void playButtonClicked();
 //    void stopButtonClicked();
@@ -47,7 +47,7 @@ private:
     juce::AudioFormatManager formatManager;
     std::unique_ptr<juce::AudioFormatReaderSource> readerSource;
     juce::AudioTransportSource transportSource;
-    TransportState state;
+//    TransportState state;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainContentComponent)
 };
