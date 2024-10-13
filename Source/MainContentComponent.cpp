@@ -140,6 +140,10 @@ void MainContentComponent::openFile(bool forOutput)
         if (file != juce::File{})                                         // [9]
         {
             if (forOutput){
+                DBG("Writing to memory: " << file.getFullPathName());
+            } 
+            else {
+                
                 auto* reader = formatManager.createReaderFor(file);                 // [10]
                 
                 if (reader != nullptr)
@@ -147,7 +151,8 @@ void MainContentComponent::openFile(bool forOutput)
                     auto newSource = std::make_unique<juce::AudioFormatReaderSource>(reader, true);   // [11]
                     transportSource.setSource(newSource.get(), 0, nullptr, reader->sampleRate);       // [12]
                     playButton.setEnabled(true);                                                      // [13]
-                    readerSource.reset(newSource.release());                                          // [14]
+                    readerSource.reset(newSource.release());   
+                    DBG("Playing file: " << file.getFullPathName());// [14]
                 }
             }
         }
