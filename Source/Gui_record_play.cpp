@@ -53,3 +53,17 @@ void AudioToFileWriter::writeOutputToFile(const juce::AudioBuffer<float>& buffer
         }
     }
 };
+
+void AudioToFileWriter::closeFile(){
+//    check that writer is valid before closing
+    if(writer != nullptr){
+//        release audioFormatWriter to finalize the file
+        writer.reset();
+    }
+//    ensure the file stream is valid before flush is called
+    if(fileStream != nullptr){
+        fileStream->flush();
+//        this is redundant but should ensure the file stream is released before file is closed
+        fileStream.reset();
+    }
+};
