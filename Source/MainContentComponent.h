@@ -2,6 +2,7 @@
 
 #include <JuceHeader.h>
 #include "gui_record_play.h"
+//#include "gui_record_play.cpp"
 
 class MainContentComponent   : public juce::AudioAppComponent,
                                public juce::ChangeListener,

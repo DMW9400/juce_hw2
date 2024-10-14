@@ -1,5 +1,6 @@
 #include <JuceHeader.h>
 #include "MainContentComponent.h"
+#include "gui_record_play.h"
 
 MainContentComponent::MainContentComponent()
     : currentState(IDLE)
