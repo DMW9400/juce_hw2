@@ -119,6 +119,9 @@ void MainContentComponent::timerCallback(){
 void MainContentComponent::sliderValueChanged(juce::Slider* slider){}
 
 void MainContentComponent::openFile(bool forOutput)
+
+//forOutput = save to file mode
+//!forOutput = open file mode
 {
     chooser = std::make_unique<juce::FileChooser>("Select a Wave file to play...",
                                                   juce::File{},

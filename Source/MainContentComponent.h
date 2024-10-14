@@ -25,6 +25,7 @@ public:
     void timerCallback() override;
 
 private:
+//    AudioToFileWriter fileWriter;
 //    enum TransportState
 //    {
 //        Stopped,
