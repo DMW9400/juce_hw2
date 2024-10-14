@@ -9,6 +9,7 @@
 */
 
 #pragma once
+#include <JuceHeader.h>
 
 enum AppState {
     IDLE,
@@ -27,6 +28,5 @@ public:
 private:
     std::unique_ptr<juce::FileOutputStream> fileStream;
     std::unique_ptr<juce::AudioFormatWriter> writer;
-    
 };
 
