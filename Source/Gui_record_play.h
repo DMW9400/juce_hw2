@@ -30,3 +30,14 @@ private:
     std::unique_ptr<juce::AudioFormatWriter> writer;
 };
 
+class DisplayAudioWaveForm : public juce::Component {
+public:
+    DisplayAudioWaveForm();
+    ~DisplayAudioWaveForm() override;
+    void addAudioData(const juce::AudioBuffer<float>& buffer,
+                      int startSample, int numSamples);
+    void paint(juce::Graphics& g) override;
+    void resized() override;
+private:
+    juce::AudioVisualiserComponent audioVisualiser;
+};

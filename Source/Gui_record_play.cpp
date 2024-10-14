@@ -67,3 +67,32 @@ void AudioToFileWriter::closeFile(){
         fileStream.reset();
     }
 };
+
+DisplayAudioWaveForm::DisplayAudioWaveForm()
+    : audioVisualiser(1)
+{
+    audioVisualiser.setBufferSize(1024);
+    
+    
+    audioVisualiser.setSamplesPerBlock(256);
+    
+    audioVisualiser.setColours(juce::Colours::green, juce::Colours::black);
+    
+    addAndMakeVisible(audioVisualiser);
+}
+
+void DisplayAudioWaveForm::addAudioData(const juce::AudioBuffer<float>& buffer, int startSample, int numSamples){
+//    get the read pointers fo each channel in the buffer
+    const float *const  *channelData = buffer.getArrayOfReadPointers();
+    audioVisualiser.pushBuffer(channelData, buffer.getNumChannels(), numSamples);
+};
+
+void DisplayAudioWaveForm::paint(juce::Graphics &g){
+    g.fillAll(juce::Colours::black);
+};
+
+void DisplayAudioWaveForm::resized(){
+    auto bounds = getLocalBounds().reduced(10);
+
+    audioVisualiser.setBounds(bounds);
+};
