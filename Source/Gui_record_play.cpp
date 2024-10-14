@@ -81,6 +81,10 @@ DisplayAudioWaveForm::DisplayAudioWaveForm()
     addAndMakeVisible(audioVisualiser);
 }
 
+DisplayAudioWaveForm::~DisplayAudioWaveForm()
+{
+}
+
 void DisplayAudioWaveForm::addAudioData(const juce::AudioBuffer<float>& buffer, int startSample, int numSamples){
 //    get the read pointers fo each channel in the buffer
     const float *const  *channelData = buffer.getArrayOfReadPointers();
