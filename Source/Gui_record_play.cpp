@@ -23,7 +23,7 @@ bool AudioToFileWriter::setup(const juce::File& outputFile, int sampleRate, int 
     if (fileStream != nullptr){
 //      reset the writer so it is ready for a new fileStream
         writer.reset();
-        
+//        instantiate WavAudioFormat class with wavFormat, so we have access to createWriterFor method
         juce::WavAudioFormat wavFormat;
         writer = std::unique_ptr<juce::AudioFormatWriter>(wavFormat.createWriterFor(fileStream.get(),
                                                                                     sampleRate,
@@ -31,8 +31,25 @@ bool AudioToFileWriter::setup(const juce::File& outputFile, int sampleRate, int 
                                                                                     16,
                                                                                     {},
                                                                                     0));
-        
+        if (writer != nullptr){
+            DBG("File Write Successful");
+            return true;
+        }
     }
-    
+    DBG("File Write Failed");
     return false;
+};
+
+void AudioToFileWriter::writeOutputToFile(const juce::AudioBuffer<float>& buffer){
+//    make sure the writer is valid
+    if (writer != nullptr){
+//        use buffer class methods to retrieve number of channels and samples associated with buffer
+        int numChannels = buffer.getNumChannels();
+        int numSamples = buffer.getNumSamples();
+        
+//        unsure why getNumChannels is suggested in the documentation alongside writeFromAudioSampleBuffer, as the latter method already allows for multi-channel audio writing
+        if (numChannels > 0 && numSamples > 0 ){
+            writer->writeFromAudioSampleBuffer(buffer, 0, numSamples);
+        }
+    }
 };
