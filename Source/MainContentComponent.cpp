@@ -6,6 +6,7 @@ MainContentComponent::MainContentComponent()
     : currentState(IDLE)
 {
     addAndMakeVisible(displayAudioWaveForm);
+    
     addAndMakeVisible(&openButton);
     openButton.setButtonText("Open...");
     openButton.addListener(this);
@@ -14,7 +15,6 @@ MainContentComponent::MainContentComponent()
     addAndMakeVisible(&playButton);
     playButton.setButtonText("Play");
     playButton.addListener(this);
-//    playButton.onClick = [this] { playButtonClicked(); };
     playButton.setColour(juce::TextButton::buttonColourId, juce::Colours::green);
     playButton.setEnabled(false);
 
@@ -23,6 +23,16 @@ MainContentComponent::MainContentComponent()
     stopButton.addListener(this);
     stopButton.setColour(juce::TextButton::buttonColourId, juce::Colours::red);
     stopButton.setEnabled(false);
+    
+    addAndMakeVisible(&recordButton);
+    recordButton.setButtonText("Record");
+    recordButton.addListener(this);
+    
+    addAndMakeVisible(scrubber);
+    scrubber.setEnabled(false);
+    scrubber.setRange(0.0, 1.0);
+    scrubber.setEnabled(false);
+    scrubber.addListener(this);
 
     setSize(600, 400);
 
@@ -39,13 +49,28 @@ MainContentComponent::~MainContentComponent()
 
 void MainContentComponent::buttonClicked(juce::Button* button){
     if (button == &openButton){
+        if(AppState = PLAYING){
+            
+        }
         openFile(false);
         }
     else if (button == &playButton){
-        currentState = PLAYING;
+        if (transportSource.isPlaying()) {
+            transportSource.stop();  // If it's already playing, stop it
+        }
+        else {
+            transportSource.start();  // Start playing the loaded file
+            currentState = PLAYING;
+            DBG("Playback started");
+        }
     }
     else if (button == &stopButton){
-        currentState = IDLE;
+        if (transportSource.isPlaying()) {
+                    transportSource.stop();  // Stop the playback
+                }
+                transportSource.setPosition(0.0);  // Reset the playhead to the beginning
+                currentState = IDLE;
+                DBG("Playback stopped and reset");
     }
 }
 
@@ -84,42 +109,12 @@ void MainContentComponent::changeListenerCallback(juce::ChangeBroadcaster* sourc
 {
     if (source == &transportSource)
     {
-//        if (transportSource.isPlaying())
-//            changeState(Playing);
-//        else
-//            changeState(Stopped);
+        if (transportSource.isPlaying())
+            currentState = PLAYING;
+        else
+            currentState = IDLE;
     }
 }
-
-//void MainContentComponent::changeState(MainContentComponent::TransportState newState)
-//{
-//    if (state != newState)
-//    {
-//        state = newState;
-//
-//        switch (state)
-//        {
-//            case Stopped:                           // [3]
-//                stopButton.setEnabled(false);
-//                playButton.setEnabled(true);
-//                transportSource.setPosition(0.0);
-//                break;
-//
-//            case Starting:                          // [4]
-//                playButton.setEnabled(false);
-//                transportSource.start();
-//                break;
-//
-//            case Playing:                           // [5]
-//                stopButton.setEnabled(true);
-//                break;
-//
-//            case Stopping:                          // [6]
-//                transportSource.stop();
-//                break;
-//        }
-//    }
-//}
 
 void MainContentComponent::timerCallback(){
     

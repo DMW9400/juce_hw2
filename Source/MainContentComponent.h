@@ -27,32 +27,19 @@ public:
 
 private:
     AudioToFileWriter fileWriter;
-//    enum TransportState
-//    {
-//        Stopped,
-//        Starting,
-//        Playing,
-//        Stopping
-//    };
     AppState currentState;
-//    void changeState(TransportState newState);
-//    void openButtonClicked();
-//    void playButtonClicked();
-//    void stopButtonClicked();
     void openFile(bool forOutput);
     bool loadAudioFile(const juce::File &file);
     
     DisplayAudioWaveForm displayAudioWaveForm;
-    juce::TextButton openButton;
-    juce::TextButton playButton;
-    juce::TextButton stopButton;
+    juce::TextButton openButton, playButton, stopButton, recordButton;
+    juce::Slider scrubber;
 
     std::unique_ptr<juce::FileChooser> chooser;
 
     juce::AudioFormatManager formatManager;
     std::unique_ptr<juce::AudioFormatReaderSource> readerSource;
     juce::AudioTransportSource transportSource;
-//    TransportState state;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MainContentComponent)
 };
