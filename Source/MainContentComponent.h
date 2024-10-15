@@ -27,7 +27,7 @@ public:
 
 private:
     AudioToFileWriter fileWriter;
-    AppState currentState;
+//    AppState state;
     void openFile(bool forOutput);
     bool loadAudioFile(const juce::File &file);
     

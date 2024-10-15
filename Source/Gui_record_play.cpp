@@ -10,6 +10,8 @@
 #include <JuceHeader.h>
 #include "gui_record_play.h"
 
+AppState state = IDLE;
+
 bool AudioToFileWriter::setup(const juce::File& outputFile, int sampleRate, int numChannels){
     
 //    check if outputFile already exists, then delete if so
@@ -68,8 +70,9 @@ void AudioToFileWriter::closeFile(){
     }
 };
 
-void changeState(AppState& state, juce::AudioTransportSource& transportSource, juce::TextButton& playButton, juce::TextButton& stopButton)
+void changeState(AppState newState, juce::AudioTransportSource& transportSource, juce::TextButton& playButton, juce::TextButton& stopButton)
 {
+    state = newState;
     if (state == IDLE)
     {
         stopButton.setEnabled(false);

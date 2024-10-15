@@ -3,7 +3,6 @@
 #include "gui_record_play.h"
 
 MainContentComponent::MainContentComponent()
-    : currentState(IDLE)
 {
     addAndMakeVisible(displayAudioWaveForm);
     
@@ -49,10 +48,11 @@ MainContentComponent::~MainContentComponent()
 
 void MainContentComponent::buttonClicked(juce::Button* button){
     if (button == &openButton){
-        if(AppState = PLAYING){
-            
+        if(state == PLAYING){
+            transportSource.stop();
         }
         openFile(false);
+        changeState(IDLE, transportSource, playButton, stopButton);
         }
     else if (button == &playButton){
         if (transportSource.isPlaying()) {
@@ -60,7 +60,7 @@ void MainContentComponent::buttonClicked(juce::Button* button){
         }
         else {
             transportSource.start();  // Start playing the loaded file
-            currentState = PLAYING;
+            changeState(PLAYING, transportSource, playButton, stopButton);
             DBG("Playback started");
         }
     }
@@ -68,9 +68,9 @@ void MainContentComponent::buttonClicked(juce::Button* button){
         if (transportSource.isPlaying()) {
                     transportSource.stop();  // Stop the playback
                 }
-                transportSource.setPosition(0.0);  // Reset the playhead to the beginning
-                currentState = IDLE;
-                DBG("Playback stopped and reset");
+        transportSource.setPosition(0.0);  // Reset the playhead to the beginning
+        changeState(IDLE, transportSource, playButton, stopButton);
+        DBG("Playback stopped and reset");
     }
 }
 
@@ -110,9 +110,9 @@ void MainContentComponent::changeListenerCallback(juce::ChangeBroadcaster* sourc
     if (source == &transportSource)
     {
         if (transportSource.isPlaying())
-            currentState = PLAYING;
+            state = PLAYING;
         else
-            currentState = IDLE;
+            state = IDLE;
     }
 }
 
@@ -149,7 +149,7 @@ void MainContentComponent::openFile(bool forOutput)
                 if (fileWriter.setup(file, 44100, 1))  // Mono, 44.1kHz
                                 {
                                     DBG("Recording to file: " << file.getFullPathName());
-                                    currentState = RECORDING;
+                                    changeState(RECORDING, transportSource, playButton, stopButton);
                                 }
             } 
 //            logic for open file mode

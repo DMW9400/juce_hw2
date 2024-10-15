@@ -17,8 +17,8 @@ enum AppState {
     RECORDING
 };
 
-extern AppState currentAppState;
-void changeState(AppState& state, juce::AudioTransportSource& transportSource, juce::TextButton& playButton, juce::TextButton& stopButton);
+extern AppState state;
+void changeState(AppState newState, juce::AudioTransportSource& transportSource, juce::TextButton& playButton, juce::TextButton& stopButton);
 
 class AudioToFileWriter {
 public:
