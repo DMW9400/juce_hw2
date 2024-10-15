@@ -2,7 +2,7 @@
 
 #include <JuceHeader.h>
 #include "gui_record_play.h"
-//#include "gui_record_play.cpp"
+
 
 class MainContentComponent   : public juce::AudioAppComponent,
                                public juce::ChangeListener,
@@ -26,7 +26,7 @@ public:
     void timerCallback() override;
 
 private:
-//    AudioToFileWriter fileWriter;
+    AudioToFileWriter fileWriter;
 //    enum TransportState
 //    {
 //        Stopped,
@@ -40,7 +40,9 @@ private:
 //    void playButtonClicked();
 //    void stopButtonClicked();
     void openFile(bool forOutput);
-
+    bool loadAudioFile(const juce::File &file);
+    
+    DisplayAudioWaveForm displayAudioWaveForm;
     juce::TextButton openButton;
     juce::TextButton playButton;
     juce::TextButton stopButton;
