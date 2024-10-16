@@ -78,6 +78,7 @@ void changeState(AppState newState, juce::AudioTransportSource& transportSource,
         stopButton.setEnabled(false);
         playButton.setEnabled(true);
         transportSource.setPosition(0.0);
+//        stopTimer();
     }
     else if (state == PLAYING)
     {

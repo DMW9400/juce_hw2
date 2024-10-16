@@ -118,9 +118,15 @@ void MainContentComponent::changeListenerCallback(juce::ChangeBroadcaster* sourc
 }
 
 void MainContentComponent::timerCallback(){
-    
+    if (state == PLAYING){
+        scrubber.setValue(transportSource.getCurrentPosition(), juce::dontSendNotification);
+    }
 }
-void MainContentComponent::sliderValueChanged(juce::Slider* slider){}
+void MainContentComponent::sliderValueChanged(juce::Slider* slider){
+    if (slider == &scrubber && (state == PLAYING || state == IDLE)){
+        transportSource.setPosition(scrubber.getValue());
+    }
+}
 
 void MainContentComponent::openFile(bool forOutput)
 //forOutput = save to file mode
@@ -145,6 +151,7 @@ void MainContentComponent::openFile(bool forOutput)
 
         if (file != juce::File{})                                         // [9]
         {
+//          clean transportSource in the event a previous file was loaded
             transportSource.stop();
             transportSource.setSource(nullptr);
             if (forOutput){
@@ -155,7 +162,6 @@ void MainContentComponent::openFile(bool forOutput)
                                 }
             } 
 //            logic for open file mode
-            
             else{
                 if(loadAudioFile(file)){
                     playButton.setEnabled(true);
@@ -175,8 +181,12 @@ bool MainContentComponent::loadAudioFile(const juce::File &file){
 
     if (reader != nullptr)
     {
+//        clear prior sources to prevent issues
         readerSource.reset(new juce::AudioFormatReaderSource(reader, true));
         transportSource.setSource(readerSource.get(), 0, nullptr, reader->sampleRate);
+        
+//        correctly set scrubber range
+        scrubber.setRange(0.0, transportSource.getLengthInSeconds());
         // Load the file data into the waveform display
         juce::AudioBuffer<float> buffer((int)reader->numChannels, (int)reader->lengthInSamples);
         reader->read(&buffer, 0, (int)reader->lengthInSamples, 0, true, true);
@@ -189,40 +199,4 @@ bool MainContentComponent::loadAudioFile(const juce::File &file){
 
     return false;  // Failed to load the file
 };
-//void MainContentComponent::openButtonClicked()
-//{
-//    chooser = std::make_unique<juce::FileChooser>("Select a Wave file to play...",
-//                                                  juce::File{},
-//                                                  "*.wav");                     // [7]
-//    auto chooserFlags = juce::FileBrowserComponent::openMode
-//                      | juce::FileBrowserComponent::canSelectFiles;
-//
-//    chooser->launchAsync(chooserFlags, [this](const juce::FileChooser& fc)       // [8]
-//    {
-//        auto file = fc.getResult();
-//
-//        if (file != juce::File{})                                               // [9]
-//        {
-//            auto* reader = formatManager.createReaderFor(file);                 // [10]
-//
-//            if (reader != nullptr)
-//            {
-//                auto newSource = std::make_unique<juce::AudioFormatReaderSource>(reader, true);   // [11]
-//                transportSource.setSource(newSource.get(), 0, nullptr, reader->sampleRate);       // [12]
-//                playButton.setEnabled(true);                                                      // [13]
-//                readerSource.reset(newSource.release());                                          // [14]
-//            }
-//        }
-//    });
-//}
 
-
-//void MainContentComponent::playButtonClicked()
-//{
-//    changeState(Starting);
-//}
-//
-//void MainContentComponent::stopButtonClicked()
-//{
-//    changeState(Stopping);
-//}
