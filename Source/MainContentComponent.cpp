@@ -30,7 +30,6 @@ MainContentComponent::MainContentComponent()
     addAndMakeVisible(scrubber);
     scrubber.setEnabled(false);
     scrubber.setRange(0.0, 1.0);
-    scrubber.setEnabled(false);
     scrubber.addListener(this);
 
     setSize(600, 400);
@@ -57,6 +56,7 @@ void MainContentComponent::changeState(AppState newState)
         playButton.setEnabled(true);
 //        reset playhead
         transportSource.setPosition(0.0);
+        scrubber.setEnabled(false);
         stopTimer();
     }
     else if (state == PLAYING)
@@ -64,6 +64,7 @@ void MainContentComponent::changeState(AppState newState)
         stopButton.setEnabled(true);
         playButton.setEnabled(false);
         transportSource.start();
+        scrubber.setEnabled(true);
 //        set timer to update 30 times per sec
         startTimerHz(30);
     }
@@ -72,7 +73,8 @@ void MainContentComponent::changeState(AppState newState)
         stopButton.setEnabled(true);
         playButton.setEnabled(false);
         transportSource.stop();
-        stopTimer(); 
+        scrubber.setEnabled(false);
+        stopTimer();
     }
 }
 
@@ -131,7 +133,10 @@ void MainContentComponent::resized()
     playButton.setBounds(10, 40, getWidth() - 20, 20);
     stopButton.setBounds(10, 70, getWidth() - 20, 20);
     
-    displayAudioWaveForm.setBounds(10, 100, getWidth() - 20, getHeight() - 120);
+    scrubber.setBounds(10, 100, getWidth() - 20, 20);
+    
+//    displayAudioWaveForm.setBounds(10, 100, getWidth() - 20, getHeight() - 120);
+    displayAudioWaveForm.setBounds(10, 140, getWidth() - 20, getHeight() - 160);
 
 }
 
@@ -215,8 +220,9 @@ bool MainContentComponent::loadAudioFile(const juce::File &file){
         readerSource.reset(new juce::AudioFormatReaderSource(reader, true));
         transportSource.setSource(readerSource.get(), 0, nullptr, reader->sampleRate);
         
-//        correctly set scrubber range
+//        correctly set scrubber range and enable
         scrubber.setRange(0.0, transportSource.getLengthInSeconds());
+        scrubber.setEnabled(true);
         // Load the file data into the waveform display
         juce::AudioBuffer<float> buffer((int)reader->numChannels, (int)reader->lengthInSamples);
         reader->read(&buffer, 0, (int)reader->lengthInSamples, 0, true, true);
