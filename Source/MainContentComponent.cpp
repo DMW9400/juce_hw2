@@ -20,12 +20,14 @@ MainContentComponent::MainContentComponent()
     addAndMakeVisible(&stopButton);
     stopButton.setButtonText("Stop");
     stopButton.addListener(this);
-    stopButton.setColour(juce::TextButton::buttonColourId, juce::Colours::red);
+    stopButton.setColour(juce::TextButton::buttonColourId, juce::Colours::orange);
     stopButton.setEnabled(false);
     
     addAndMakeVisible(&recordButton);
     recordButton.setButtonText("Record");
     recordButton.addListener(this);
+    recordButton.setColour(juce::TextButton::buttonColourId, juce::Colours::red);
+//    recordButton.setEnabled()
     
     addAndMakeVisible(scrubber);
     scrubber.setEnabled(false);
@@ -72,9 +74,9 @@ void MainContentComponent::changeState(AppState newState)
     {
         stopButton.setEnabled(true);
         playButton.setEnabled(false);
-        transportSource.stop();
+//        transportSource.stop();
         scrubber.setEnabled(false);
-        stopTimer();
+//        stopTimer();
     }
 }
 
@@ -104,6 +106,10 @@ void MainContentComponent::buttonClicked(juce::Button* button){
         changeState(IDLE);
         DBG("Playback stopped and reset");
     }
+    else if (button == &recordButton){
+        openFile(true);
+        changeState(RECORDING);
+    }
 }
 
 void MainContentComponent::prepareToPlay(int samplesPerBlockExpected, double sampleRate)
@@ -113,15 +119,52 @@ void MainContentComponent::prepareToPlay(int samplesPerBlockExpected, double sam
 
 void MainContentComponent::getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill)
 {
-    if (readerSource.get() == nullptr)
+    if (state == IDLE)
     {
+        // Clear the buffer if we're not recording or playing
         bufferToFill.clearActiveBufferRegion();
         return;
     }
+    
+    if (state == PLAYING)
+    {
+        // If we're playing, fill the buffer with data from the transport source
+        transportSource.getNextAudioBlock(bufferToFill);
+    }
+    else if (state == RECORDING)
+    {
+        // Capture input audio when recording
+        auto* device = deviceManager.getCurrentAudioDevice();
+        if (device != nullptr)
+        {
+            auto activeInputChannels = device->getActiveInputChannels();
+            auto activeOutputChannels = device->getActiveOutputChannels();
+            
+            const int maxInputChannels = activeInputChannels.getHighestBit() + 1;
+            const int maxOutputChannels = activeOutputChannels.getHighestBit() + 1;
 
-    transportSource.getNextAudioBlock(bufferToFill);
+            for (int channel = 0; channel < maxOutputChannels; ++channel)
+            {
+                if (!activeOutputChannels[channel])
+                {
+                    bufferToFill.buffer->clear(channel, bufferToFill.startSample, bufferToFill.numSamples);
+                }
+            }
+
+            for (int channel = 0; channel < maxInputChannels; ++channel)
+            {
+                if (auto* inputChannelData = bufferToFill.buffer->getWritePointer(channel))
+                {
+                    // Add the input channel data to the waveform display
+                    displayAudioWaveForm.addAudioData(*bufferToFill.buffer, bufferToFill.startSample, bufferToFill.numSamples);
+                    
+                    // Write the input audio to file (optional)
+                    fileWriter.writeOutputToFile(*bufferToFill.buffer);
+                }
+            }
+        }
+    }
 }
-
 void MainContentComponent::releaseResources()
 {
     transportSource.releaseResources();
@@ -132,11 +175,11 @@ void MainContentComponent::resized()
     openButton.setBounds(10, 10, getWidth() - 20, 20);
     playButton.setBounds(10, 40, getWidth() - 20, 20);
     stopButton.setBounds(10, 70, getWidth() - 20, 20);
+    recordButton.setBounds(10, 100, getWidth() - 20, 20);
     
-    scrubber.setBounds(10, 100, getWidth() - 20, 20);
+    scrubber.setBounds(10, 130, getWidth() - 20, 20);
     
-//    displayAudioWaveForm.setBounds(10, 100, getWidth() - 20, getHeight() - 120);
-    displayAudioWaveForm.setBounds(10, 140, getWidth() - 20, getHeight() - 160);
+    displayAudioWaveForm.setBounds(10, 160, getWidth() - 20, getHeight() - 160);
 
 }
 

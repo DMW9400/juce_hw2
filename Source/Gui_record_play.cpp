@@ -70,30 +70,6 @@ void AudioToFileWriter::closeFile(){
     }
 };
 
-//void changeState(AppState newState, juce::AudioTransportSource& transportSource, juce::TextButton& playButton, juce::TextButton& stopButton)
-//{
-//    state = newState;
-//    if (state == IDLE)
-//    {
-//        stopButton.setEnabled(false);
-//        playButton.setEnabled(true);
-//        transportSource.setPosition(0.0);
-////        stopTimer();
-//    }
-//    else if (state == PLAYING)
-//    {
-//        stopButton.setEnabled(true);
-//        playButton.setEnabled(false);
-//        transportSource.start();
-//    }
-//    else if (state == RECORDING)
-//    {
-//        stopButton.setEnabled(true);
-//        playButton.setEnabled(false);
-//        transportSource.stop();
-//    }
-//}
-
 DisplayAudioWaveForm::DisplayAudioWaveForm()
     : audioVisualiser(1)
 {
