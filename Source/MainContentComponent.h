@@ -25,7 +25,6 @@ public:
     void sliderValueChanged(juce::Slider* slider) override;
     void timerCallback() override;
 
-
 private:
     AudioToFileWriter fileWriter;
     

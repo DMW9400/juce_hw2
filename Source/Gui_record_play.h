@@ -28,8 +28,6 @@ public:
     void closeFile();
 private:
     std::mutex fileMutex;
-//    below coded in debug attempt
-//    std::unique_ptr<juce::FileOutputStream> fileStream;
     std::unique_ptr<juce::AudioFormatWriter> writer;
 };
 
