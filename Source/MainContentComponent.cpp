@@ -47,13 +47,42 @@ MainContentComponent::~MainContentComponent()
     transportSource.setSource(nullptr);
 }
 
+void MainContentComponent::changeState(AppState newState)
+{
+    state = newState;
+
+    if (state == IDLE)
+    {
+        stopButton.setEnabled(false);
+        playButton.setEnabled(true);
+//        reset playhead
+        transportSource.setPosition(0.0);
+        stopTimer();
+    }
+    else if (state == PLAYING)
+    {
+        stopButton.setEnabled(true);
+        playButton.setEnabled(false);
+        transportSource.start();
+//        set timer to update 30 times per sec
+        startTimerHz(30);
+    }
+    else if (state == RECORDING)
+    {
+        stopButton.setEnabled(true);
+        playButton.setEnabled(false);
+        transportSource.stop();
+        stopTimer(); 
+    }
+}
+
 void MainContentComponent::buttonClicked(juce::Button* button){
     if (button == &openButton){
         if(state == PLAYING){
             transportSource.stop();
         }
         openFile(false);
-        changeState(IDLE, transportSource, playButton, stopButton);
+        changeState(IDLE);
         }
     else if (button == &playButton){
         if (transportSource.isPlaying()) {
@@ -61,7 +90,7 @@ void MainContentComponent::buttonClicked(juce::Button* button){
         }
         else {
             transportSource.start();  // Start playing the loaded file
-            changeState(PLAYING, transportSource, playButton, stopButton);
+            changeState(PLAYING);
             DBG("Playback started");
         }
     }
@@ -70,7 +99,7 @@ void MainContentComponent::buttonClicked(juce::Button* button){
                     transportSource.stop();  // Stop the playback
                 }
         transportSource.setPosition(0.0);  // Reset the playhead to the beginning
-        changeState(IDLE, transportSource, playButton, stopButton);
+        changeState(IDLE);
         DBG("Playback stopped and reset");
     }
 }
@@ -158,7 +187,8 @@ void MainContentComponent::openFile(bool forOutput)
                 if (fileWriter.setup(file, 44100, 1))  // Mono, 44.1kHz
                                 {
                                     DBG("Recording to file: " << file.getFullPathName());
-                                    changeState(RECORDING, transportSource, playButton, stopButton);
+//                                    changeState(RECORDING, transportSource, playButton, stopButton);
+                                    changeState(RECORDING);
                                 }
             } 
 //            logic for open file mode

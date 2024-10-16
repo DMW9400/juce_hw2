@@ -25,11 +25,13 @@ public:
     void sliderValueChanged(juce::Slider* slider) override;
     void timerCallback() override;
 
+
 private:
     AudioToFileWriter fileWriter;
-//    AppState state;
+    
     void openFile(bool forOutput);
     bool loadAudioFile(const juce::File &file);
+    void changeState(AppState newState);
     
     DisplayAudioWaveForm displayAudioWaveForm;
     juce::TextButton openButton, playButton, stopButton, recordButton;
