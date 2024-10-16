@@ -44,6 +44,7 @@ MainContentComponent::MainContentComponent()
 MainContentComponent::~MainContentComponent()
 {
     shutdownAudio();
+    transportSource.setSource(nullptr);
 }
 
 void MainContentComponent::buttonClicked(juce::Button* button){
@@ -122,7 +123,6 @@ void MainContentComponent::timerCallback(){
 void MainContentComponent::sliderValueChanged(juce::Slider* slider){}
 
 void MainContentComponent::openFile(bool forOutput)
-
 //forOutput = save to file mode
 //!forOutput = open file mode
 {
@@ -145,6 +145,8 @@ void MainContentComponent::openFile(bool forOutput)
 
         if (file != juce::File{})                                         // [9]
         {
+            transportSource.stop();
+            transportSource.setSource(nullptr);
             if (forOutput){
                 if (fileWriter.setup(file, 44100, 1))  // Mono, 44.1kHz
                                 {
@@ -163,19 +165,6 @@ void MainContentComponent::openFile(bool forOutput)
                     DBG("Failed to load audio file.");
                 }
             }
-//            else {
-//                
-//                auto* reader = formatManager.createReaderFor(file);                 // [10]
-//                
-//                if (reader != nullptr)
-//                {
-//                    auto newSource = std::make_unique<juce::AudioFormatReaderSource>(reader, true);   // [11]
-//                    transportSource.setSource(newSource.get(), 0, nullptr, reader->sampleRate);       // [12]
-//                    playButton.setEnabled(true);                                                      // [13]
-//                    readerSource.reset(newSource.release());   
-//                    DBG("Playing file: " << file.getFullPathName());// [14]
-//                }
-//            }
         }
     });
 }
@@ -186,6 +175,8 @@ bool MainContentComponent::loadAudioFile(const juce::File &file){
 
     if (reader != nullptr)
     {
+        readerSource.reset(new juce::AudioFormatReaderSource(reader, true));
+        transportSource.setSource(readerSource.get(), 0, nullptr, reader->sampleRate);
         // Load the file data into the waveform display
         juce::AudioBuffer<float> buffer((int)reader->numChannels, (int)reader->lengthInSamples);
         reader->read(&buffer, 0, (int)reader->lengthInSamples, 0, true, true);
