@@ -27,7 +27,9 @@ public:
     void writeOutputToFile(const juce::AudioBuffer<float>& buffer);
     void closeFile();
 private:
-    std::unique_ptr<juce::FileOutputStream> fileStream;
+    std::mutex fileMutex;
+//    below coded in debug attempt
+//    std::unique_ptr<juce::FileOutputStream> fileStream;
     std::unique_ptr<juce::AudioFormatWriter> writer;
 };
 
