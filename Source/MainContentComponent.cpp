@@ -136,6 +136,8 @@ void MainContentComponent::getNextAudioBlock(const juce::AudioSourceChannelInfo&
     if (state == PLAYING)
     {
         transportSource.getNextAudioBlock(bufferToFill);
+//        NEW
+        return;
     }
     else if (state == RECORDING)
     {
@@ -155,6 +157,7 @@ void MainContentComponent::getNextAudioBlock(const juce::AudioSourceChannelInfo&
 
                     // Write the input audio to file
                     fileWriter.writeOutputToFile(*bufferToFill.buffer);
+                    return;
                 }
             }
         }
