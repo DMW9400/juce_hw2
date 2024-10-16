@@ -44,39 +44,42 @@ MainContentComponent::MainContentComponent()
 
 MainContentComponent::~MainContentComponent()
 {
-    shutdownAudio();
+    transportSource.stop();
     transportSource.setSource(nullptr);
+    shutdownAudio();
 }
 
 void MainContentComponent::changeState(AppState newState)
 {
-    state = newState;
+    if (state != newState)
+    {
+        state = newState;
 
-    if (state == IDLE)
-    {
-        stopButton.setEnabled(false);
-        playButton.setEnabled(true);
-//        reset playhead
-        transportSource.setPosition(0.0);
-        scrubber.setEnabled(false);
-        stopTimer();
-    }
-    else if (state == PLAYING)
-    {
-        stopButton.setEnabled(true);
-        playButton.setEnabled(false);
-        transportSource.start();
-        scrubber.setEnabled(true);
-//        set timer to update 30 times per sec
-        startTimerHz(30);
-    }
-    else if (state == RECORDING)
-    {
-        stopButton.setEnabled(true);
-        playButton.setEnabled(false);
-//        transportSource.stop();
-        scrubber.setEnabled(false);
-//        stopTimer();
+        if (state == IDLE)
+        {
+            transportSource.stop();             // Ensure transport is stopped
+            transportSource.setPosition(0.0);
+            stopButton.setEnabled(false);
+            playButton.setEnabled(true);
+            scrubber.setEnabled(false);
+            stopTimer();
+        }
+        else if (state == PLAYING)
+        {
+            stopButton.setEnabled(true);
+            playButton.setEnabled(false);
+            transportSource.start();
+            scrubber.setEnabled(true);
+            startTimerHz(30);
+        }
+        else if (state == RECORDING)
+        {
+            transportSource.stop();             // Ensure transport is stopped
+            transportSource.setSource(nullptr); // Clear the source
+            stopButton.setEnabled(true);
+            playButton.setEnabled(false);
+            scrubber.setEnabled(false);
+        }
     }
 }
 
@@ -121,55 +124,6 @@ void MainContentComponent::prepareToPlay(int samplesPerBlockExpected, double sam
 {
     transportSource.prepareToPlay(samplesPerBlockExpected, sampleRate);
 }
-
-//void MainContentComponent::getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill)
-//{
-//    if (state == IDLE)
-//    {
-//        // Clear the buffer if we're not recording or playing
-//        bufferToFill.clearActiveBufferRegion();
-//        return;
-//    }
-//    
-//    if (state == PLAYING)
-//    {
-//        // If we're playing, fill the buffer with data from the transport source
-//        transportSource.getNextAudioBlock(bufferToFill);
-//    }
-//    else if (state == RECORDING)
-//    {
-//        // Capture input audio when recording
-//        auto* device = deviceManager.getCurrentAudioDevice();
-//        if (device != nullptr)
-//        {
-//            auto activeInputChannels = device->getActiveInputChannels();
-//            auto activeOutputChannels = device->getActiveOutputChannels();
-//            
-//            const int maxInputChannels = activeInputChannels.getHighestBit() + 1;
-//            const int maxOutputChannels = activeOutputChannels.getHighestBit() + 1;
-//
-//            for (int channel = 0; channel < maxOutputChannels; ++channel)
-//            {
-//                if (!activeOutputChannels[channel])
-//                {
-//                    bufferToFill.buffer->clear(channel, bufferToFill.startSample, bufferToFill.numSamples);
-//                }
-//            }
-//
-//            for (int channel = 0; channel < maxInputChannels; ++channel)
-//            {
-//                if (auto* inputChannelData = bufferToFill.buffer->getWritePointer(channel))
-//                {
-//                    // Add the input channel data to the waveform display
-//                    displayAudioWaveForm.addAudioData(*bufferToFill.buffer, bufferToFill.startSample, bufferToFill.numSamples);
-//                    
-//                    // Write the input audio to file (optional)
-//                    fileWriter.writeOutputToFile(*bufferToFill.buffer);
-//                }
-//            }
-//        }
-//    }
-//}
 
 void MainContentComponent::getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill)
 {
@@ -247,107 +201,6 @@ void MainContentComponent::sliderValueChanged(juce::Slider* slider){
     }
 }
 
-//void MainContentComponent::openFile(bool forOutput)
-////forOutput = save to file mode
-////!forOutput = open file mode
-//{
-//    chooser = std::make_unique<juce::FileChooser>("Select a Wave file to play...",
-//                                                  juce::File{},
-//                                                  "*.wav");                     // [7]
-//    int chooserFlags;
-//    if (forOutput){
-//        chooserFlags = juce::FileBrowserComponent::saveMode
-//        | juce::FileBrowserComponent::canSelectFiles;
-//    }
-//    else {
-//        chooserFlags = juce::FileBrowserComponent::openMode
-//        | juce::FileBrowserComponent::canSelectFiles;
-//    }
-//
-//    chooser->launchAsync(chooserFlags, [this, forOutput](const juce::FileChooser& fc)       // [8]
-//    {
-//        auto file = fc.getResult();
-//
-//        if (file != juce::File{})                                         // [9]
-//        {
-////          clean transportSource in the event a previous file was loaded
-//            transportSource.stop();
-//            transportSource.setSource(nullptr);
-//            if (forOutput){
-////                Logic for recording
-//                if (fileWriter.setup(file, 44100, 1))  // Mono, 44.1kHz
-//                                {
-//                                    DBG("Recording to file: " << file.getFullPathName());
-//                                    changeState(RECORDING);
-//                                }
-//            } 
-////            logic for open file mode
-//            else{
-//                if(loadAudioFile(file)){
-//                    playButton.setEnabled(true);
-//                    DBG("Playing File: " << file.getFullPathName());
-//                }
-//                else{
-//                    DBG("Failed to load audio file.");
-//                }
-//            }
-//        }
-//    });
-//}
-//
-//void MainContentComponent::openFile(bool forOutput)
-//{
-//    chooser = std::make_unique<juce::FileChooser>("Select a file for recording...",
-//                                                  juce::File{},
-//                                                  "*.wav");
-//
-//    int chooserFlags = (forOutput)
-//                        ? juce::FileBrowserComponent::saveMode | juce::FileBrowserComponent::canSelectFiles
-//                        : juce::FileBrowserComponent::openMode | juce::FileBrowserComponent::canSelectFiles;
-//
-//    chooser->launchAsync(chooserFlags, [this, forOutput](const juce::FileChooser& fc)
-//    {
-//        auto file = fc.getResult();
-//
-//        if (file != juce::File{})  // Ensure that a valid file was selected
-//        {
-//            juce::String filePath = file.getFullPathName();
-//            
-//            if (!filePath.isEmpty())  // Ensure file path is valid before proceeding
-//            {
-//                if (forOutput)  // Recording mode
-//                {
-//                    if (fileWriter.setup(file, 44100, 1))  // Example: Mono, 44.1kHz
-//                    {
-//                        DBG("Recording to file: " << filePath);
-//                        changeState(RECORDING);  // Start recording only now
-//                    }
-//                }
-//                else  // Playback mode
-//                {
-//                    if (loadAudioFile(file))
-//                    {
-//                        playButton.setEnabled(true);
-//                        DBG("Playing File: " << filePath);
-//                    }
-//                    else
-//                    {
-//                        DBG("Failed to load audio file.");
-//                    }
-//                }
-//            }
-//            else
-//            {
-//                DBG("Invalid file path, operation aborted.");
-//            }
-//        }
-//        else
-//        {
-//            DBG("No file selected.");
-//        }
-//    });
-//}
-
 void MainContentComponent::openFile(bool forOutput)
 {
     chooser = std::make_unique<juce::FileChooser>(
@@ -369,6 +222,10 @@ void MainContentComponent::openFile(bool forOutput)
 
             if (!filePath.isEmpty())
             {
+                // Stop the transport source before changing its source
+                transportSource.stop();
+                transportSource.setSource(nullptr);
+
                 if (forOutput)  // Recording mode
                 {
                     if (fileWriter.setup(file, 44100, 1))  // Adjust sample rate and channels as needed
@@ -406,23 +263,29 @@ void MainContentComponent::openFile(bool forOutput)
     });
 }
 
-bool MainContentComponent::loadAudioFile(const juce::File &file){
+bool MainContentComponent::loadAudioFile(const juce::File &file)
+{
+    // Stop the transport source before changing its source
+    transportSource.stop();
+    transportSource.setSource(nullptr);
+
     // Create an AudioFormatReader for the file
     auto* reader = formatManager.createReaderFor(file);
 
     if (reader != nullptr)
     {
-//        clear prior sources to prevent issues
+        // Clear prior sources to prevent issues
         readerSource.reset(new juce::AudioFormatReaderSource(reader, true));
         transportSource.setSource(readerSource.get(), 0, nullptr, reader->sampleRate);
-        
-//        correctly set scrubber range and enable
+
+        // Set scrubber range and enable
         scrubber.setRange(0.0, transportSource.getLengthInSeconds());
         scrubber.setEnabled(true);
+
         // Load the file data into the waveform display
         juce::AudioBuffer<float> buffer((int)reader->numChannels, (int)reader->lengthInSamples);
         reader->read(&buffer, 0, (int)reader->lengthInSamples, 0, true, true);
-        
+
         // Push the buffer data to the waveform visualizer
         displayAudioWaveForm.addAudioData(buffer, 0, (int)reader->lengthInSamples);
 
@@ -431,4 +294,3 @@ bool MainContentComponent::loadAudioFile(const juce::File &file){
 
     return false;  // Failed to load the file
 };
-
